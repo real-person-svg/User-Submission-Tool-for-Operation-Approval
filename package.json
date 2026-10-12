@@ -1,0 +1,40 @@
+{
+  "name": "review-desk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB \"tsx watch server/index.ts\" \"vite --host 127.0.0.1\"",
+    "build": "npm run check && vite build && tsc -p tsconfig.server.json",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
+    "check": "npm run lint && vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.server.json",
+    "start": "node dist/server/server/index.js"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.3.0",
+    "element-plus": "^2.11.0",
+    "fastify": "^5.6.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "concurrently": "^9.2.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-vue": "^10.11.1",
+    "globals": "^17.13.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.0",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^7.1.0",
+    "vue-tsc": "^3.0.0"
+  }
+}

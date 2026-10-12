@@ -1,0 +1,21 @@
+/* Keep component defaults below utility classes in the cascade. */
+@layer theme, base, element-plus, components, utilities;
+
+@import 'tailwindcss';
+@import 'element-plus/dist/index.css' layer(element-plus);
+
+@theme {
+  --font-sans: 'Microsoft YaHei', system-ui, sans-serif;
+  --color-desk-background: #f3f6f4;
+  --color-desk-ink: #203b35;
+  --color-desk-muted: #60766f;
+  --color-desk-accent: #397263;
+  --color-desk-border: #dbe5df;
+}
+
+@layer base {
+  :root {
+    @apply bg-desk-background font-sans text-desk-ink;
+    font-synthesis: none;
+  }
+}
