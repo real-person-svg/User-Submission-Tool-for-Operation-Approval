@@ -12,6 +12,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "check": "npm run lint && vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.server.json",
+    "test": "tsx --test server/*.test.ts",
     "start": "node dist/server/server/index.js"
   },
   "dependencies": {
