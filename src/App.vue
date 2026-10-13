@@ -17,6 +17,7 @@ import { useSubmissionList } from './composables/useSubmissionList';
 import { useSubmissionDetail } from './composables/useSubmissionDetail';
 import { useReview } from './composables/useReview';
 
+// 通过根组件状态切换列表和录入页，无需前端路由。
 const pageView = ref<'list' | 'entry'>('list');
 const entrySaving = ref(false);
 const reviewing = ref(false);
@@ -28,6 +29,7 @@ const detail = useSubmissionDetail();
 
 const operatorId = toRef(operators, 'selectedId');
 
+// 列表和人员数据均有效、且已选择可用审稿人时，才允许审核。
 const canReview = computed(() =>
   !list.busy
   && !list.error
@@ -39,12 +41,14 @@ const canReview = computed(() =>
 
 const listButtonType = computed(() => pageView.value === 'list' ? 'primary' : 'default');
 const entryButtonType = computed(() => pageView.value === 'entry' ? 'primary' : 'default');
+// 指引依赖列表中的目标元素，并避开加载过程及其他弹层。
 const tourEnabled = computed(() =>
   pageView.value === 'list' && list.hasLoaded && !list.busy && !list.error
   && !operators.loading && !operators.error && !detail.visible && !review.visible,
 );
 
 async function refreshAfterReview() {
+  // 审核后同步列表与已打开的详情，并清除旧选择。
   list.clearSelection();
   await list.load();
   await detail.reload();
@@ -68,6 +72,7 @@ function showEntry() {
 
 function afterCreated() {
   showList();
+  // 新投稿为待审核状态，恢复默认查询后即可在列表中查看。
   list.reset();
 }
 

@@ -9,6 +9,7 @@ export function useOperators() {
   const loading = ref(false);
   const error = ref('');
 
+  // 加载所有操作员列表
   async function load() {
     loading.value = true;
     error.value = '';
@@ -18,6 +19,7 @@ export function useOperators() {
 
       items.value = result;
 
+      // 人员列表更新后，清除已不再可用的选择。
       if (selectedId.value && !result.some(item => item.id === selectedId.value)) {
         selectedId.value = undefined;
       }

@@ -8,6 +8,7 @@ defineProps<{
   reviewing: boolean;
 }>();
 
+// 所选编号由根组件共享给审核流程，用于记录操作归属。
 const operatorId = defineModel<number>('operatorId');
 
 const emit = defineEmits<{

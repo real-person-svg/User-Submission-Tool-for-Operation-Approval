@@ -8,6 +8,7 @@ defineProps<{
   formError: string;
 }>();
 
+// 这里只编辑筛选草稿，提交查询由父级响应 search 事件处理。
 const filters = defineModel<SubmissionQuery>({
   required: true,
 });

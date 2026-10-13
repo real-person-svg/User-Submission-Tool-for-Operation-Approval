@@ -11,6 +11,7 @@ import { api, errorMessage } from '../lib/api';
 import { createDefaultQuery } from '../lib/submissions';
 
 export function useSubmissionList(reviewing: Ref<boolean>) {
+  // filters 是表单草稿；requested 保存已提交条件，供翻页和重试沿用。
   const filters = reactive(createDefaultQuery());
   const requested = ref(createDefaultQuery());
 
@@ -46,9 +47,11 @@ export function useSubmissionList(reviewing: Ref<boolean>) {
     selected.value = items;
   }
 
+  // 加载审批投稿列表
   async function load(query: SubmissionQuery = requested.value) {
     if (loading.value) return;
 
+    // 复制本次查询，避免用户后续修改表单影响正在执行的请求。
     const currentQuery = {
       ...query,
     };
@@ -69,15 +72,18 @@ export function useSubmissionList(reviewing: Ref<boolean>) {
       total.value = result.total;
       hasSubmissions.value = result.hasSubmissions;
       currentPage.value = result.page;
+      // 后端可能将越界页回退，后续查询应使用修正后的页码。
       requested.value.page = result.page;
       hasLoaded.value = true;
     } catch (cause) {
+      // 保留上次成功的数据，由界面提示未更新并禁用审核。
       error.value = errorMessage(cause);
     } finally {
       loading.value = false;
     }
   }
 
+  // 搜索审批投稿列表
   function search() {
     if (busy.value) return;
 
@@ -112,6 +118,7 @@ export function useSubmissionList(reviewing: Ref<boolean>) {
   }
 
   function changePage(page: number) {
+    // 翻页沿用已提交条件，不应用尚未点击查询的表单修改。
     const query = {
       ...requested.value,
       page,
@@ -120,6 +127,7 @@ export function useSubmissionList(reviewing: Ref<boolean>) {
     void load(query);
   }
 
+  // 条件一变就清空选择，防止批量审核沿用旧筛选下的投稿。
   watch(() => [
     filters.status,
     filters.keyword,

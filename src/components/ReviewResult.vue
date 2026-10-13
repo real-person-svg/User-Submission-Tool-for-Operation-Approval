@@ -13,10 +13,12 @@ const emit = defineEmits<{
   clearResult: [];
 }>();
 
+// 接口正常返回也可能包含逐条失败，按业务结果决定提示类型。
 const resultType = computed(() => props.result?.failures.length ? 'warning' : 'success');
 
 const successTitles = computed(() => {
   const ids = props.result?.successIds ?? [];
+  // 使用提交时保存的标题，列表刷新后仍能展示本次处理的投稿。
   const titles = ids.map(id => '#' + id + ' ' + props.resultTitles[id]);
 
   return titles.join('、');

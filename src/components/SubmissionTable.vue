@@ -25,6 +25,7 @@ const emit = defineEmits<{
 
 const table = ref<TableInstance>();
 
+// 区分加载、查询失败、筛选无匹配和首次空库，提供对应提示。
 const emptyDescription = computed(() => {
   if (props.loading) return '正在加载…';
 
@@ -40,6 +41,7 @@ const emptyActionLabel = computed(() => props.hasSubmissions ? '重置筛选' : 
 function isSelectable(row: SubmissionListItem) {
   const isPending = row.status === 'pending';
 
+  // 批量选择仅允许当前页可操作的待审核投稿。
   return isPending && !props.busy && !props.listError;
 }
 
@@ -51,6 +53,7 @@ function handleEmptyAction() {
 onMounted(() => {
   const instance = table.value;
 
+  // 将表格实例交给列表状态逻辑，清空选择时同步取消勾选。
   if (instance) emit('ready', instance);
 });
 </script>

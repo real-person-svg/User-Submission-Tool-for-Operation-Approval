@@ -3,10 +3,12 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
 
   try {
     const url = `/api${path}`;
+    // 默认 15 秒超时，也允许调用方传入自己的取消信号。
     const signal = options.signal ?? AbortSignal.timeout(15000);
 
     const headers = new Headers(options.headers);
 
+    // 仅有请求体时补充 JSON 类型，并保留调用方指定的请求头。
     if (options.body !== undefined && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
     }
@@ -44,6 +46,7 @@ export function errorMessage(error: unknown) {
 }
 
 export function beijingTime(value: string, seconds = false) {
+  // 显式指定北京时间，避免显示结果随运行机器的时区变化。
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',

@@ -1,5 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 
+// 幂等创建业务表与查询索引，保留已有投稿和审核记录。
 const databaseSchema = `
   CREATE TABLE IF NOT EXISTS operators (
     id INTEGER PRIMARY KEY,
@@ -39,6 +40,7 @@ const databaseSchema = `
 `;
 
 export function initializeDatabase(db: DatabaseSync) {
+  // 建表前记录人员表是否存在，用于判断是否需要预置演示人员。
   const existingTable = db.prepare(
     'SELECT name FROM sqlite_master WHERE type = \'table\' AND name = \'operators\'',
   ).get();
@@ -47,10 +49,12 @@ export function initializeDatabase(db: DatabaseSync) {
 
   const columns = db.prepare('PRAGMA table_info(operators)').all();
 
+  // 为旧库补充软删除字段，保留人员编号及历史审核关联。
   if (!columns.some(column => column.name === 'deleted_at')) {
     db.exec('ALTER TABLE operators ADD COLUMN deleted_at TEXT');
   }
 
+  // 仅首次建表时预置人员，重启不会补回已移除的人员。
   if (!existingTable) {
     db.exec(`INSERT INTO operators(id, name)
       VALUES (1, '审核员一'), (2, '审核员二'), (3, '审核员三')`);

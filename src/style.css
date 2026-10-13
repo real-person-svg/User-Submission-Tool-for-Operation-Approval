@@ -1,4 +1,4 @@
-/* Keep component defaults below utility classes in the cascade. */
+/* 将组件默认样式放在工具类之前，便于通过工具类覆盖外观。 */
 @layer theme, base, element-plus, components, utilities;
 
 @import 'tailwindcss';

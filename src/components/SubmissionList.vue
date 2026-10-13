@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>();
 
 function handleReview(items: SubmissionListItem[], action: ReviewInput['action']) {
+  // 行内审核和批量审核统一交给根组件打开确认框。
   emit('review', items, action);
 }
 </script>

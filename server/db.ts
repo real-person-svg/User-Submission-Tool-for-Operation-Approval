@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 
 export { initializeDatabase } from './database/schema.js';
 
+// 启用外键和 WAL，并在数据库被占用时最多等待 5 秒。
 const connectionPragmas = `
   PRAGMA foreign_keys = ON;
   PRAGMA journal_mode = WAL;

@@ -33,6 +33,7 @@ export function useReview(options: ReviewOptions) {
   const result = ref<ReviewResult>();
   const resultTitles = ref<Record<number, string>>({});
 
+  // 开始审核
   function start(submissions: SubmissionListItem[], reviewAction: ReviewInput['action']) {
     const currentOperatorId = operatorId.value;
 
@@ -47,6 +48,7 @@ export function useReview(options: ReviewOptions) {
 
     if (!canReview.value || hasInvalidItems) return;
 
+    // 锁定确认框中的投稿快照和审稿人，确保确认内容与实际提交一致。
     const reviewItems = submissions.map(item => ({
       ...item,
     }));
@@ -59,7 +61,9 @@ export function useReview(options: ReviewOptions) {
     visible.value = true;
   }
 
+  // 提交审核
   async function submit() {
+    // 请求和后续刷新完成前保持审核锁，阻止重复提交。
     if (reviewing.value) return;
 
     const trimmedReason = reason.value.trim();
@@ -78,6 +82,7 @@ export function useReview(options: ReviewOptions) {
       return;
     }
 
+    // 携带读取时的版本号，由服务端识别确认期间发生的数据变化。
     const reviewItems = items.value.map(item => ({
       id: item.id,
       version: item.version,
@@ -119,6 +124,7 @@ export function useReview(options: ReviewOptions) {
         ElMessage.warning('没有投稿审核成功，请查看失败原因。');
       }
     } catch (cause) {
+      // 失败响应不代表服务端未提交，提示核对结果而不自动重试写入。
       const message = `${errorMessage(cause)} 请刷新后核对结果，避免重复审核。`;
 
       visible.value = false;
@@ -126,6 +132,7 @@ export function useReview(options: ReviewOptions) {
       ElMessage.error(message);
     } finally {
       try {
+        // 无论响应成功与否都刷新数据，刷新结束后再解除审核锁。
         await refresh();
       } finally {
         reviewing.value = false;

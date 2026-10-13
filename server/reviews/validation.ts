@@ -18,6 +18,7 @@ export function reviewInputError(db: DatabaseSync, input: ReviewInput) {
 
   if (!operator) return '请选择有效的操作人。';
 
+  // 整批拒绝重复编号，避免同一投稿在一个批次内被处理多次。
   const ids = items.map(item => item.id);
   const uniqueIds = new Set(ids);
   const hasDuplicate = uniqueIds.size !== items.length;

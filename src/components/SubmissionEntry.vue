@@ -48,6 +48,7 @@ async function submit() {
     return;
   }
 
+  // 表单时间不带时区，先按北京时间解析，再转为 UTC 提交。
   const beijingDateTime = `${form.time.replace(' ', 'T')}+08:00`;
   const date = new Date(beijingDateTime);
   const isValidDate = Number.isFinite(date.getTime());
@@ -90,6 +91,7 @@ async function submit() {
   }
 }
 
+// 保存状态同步给根组件，保存期间阻止切页导致表单卸载。
 watch(saving, value => emit('saving', value), {
   flush: 'sync',
 });

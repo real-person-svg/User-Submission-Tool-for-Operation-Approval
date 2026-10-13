@@ -11,7 +11,9 @@ const routeOptions = {
   },
 };
 
+// 注册评审模块的路由接口。
 export function registerReviewRoutes(app: FastifyInstance, db: DatabaseSync) {
+  // 处理创建评审请求：先校验参数，再执行评审逻辑并返回结果。
   app.post<{
     Body: ReviewInput;
   }>('/api/reviews', routeOptions, async (request, reply): Promise<ReviewResult | undefined> => {

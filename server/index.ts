@@ -18,6 +18,7 @@ try {
 
 const signals = ['SIGINT', 'SIGTERM'] as const;
 
+// 退出前关闭服务，触发数据库连接的清理钩子。
 for (const signal of signals) {
   process.once(signal, async () => {
     await app.close();

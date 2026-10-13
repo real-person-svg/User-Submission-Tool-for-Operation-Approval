@@ -14,6 +14,7 @@ const props = defineProps<{
 const visible = defineModel<boolean>({
   required: true,
 });
+
 const reason = defineModel<string>('reason', {
   required: true,
 });
@@ -26,6 +27,7 @@ const actionLabel = computed(() => props.action === 'approve' ? '通过' : '驳�
 const title = computed(() => '确认' + actionLabel.value + ' ' + props.items.length + ' 条投稿');
 const confirmType = computed(() => props.action === 'approve' ? 'success' : 'danger');
 
+// 展示打开确认框时锁定的审稿人，与实际提交保持一致。
 const operatorName = computed(() => {
   const operator = props.operators.find(item => item.id === props.operatorId);
 

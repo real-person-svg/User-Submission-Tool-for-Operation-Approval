@@ -13,6 +13,7 @@ export const statusTypes = {
 } as const;
 
 export function createDefaultQuery(): SubmissionQuery {
+  // 每次生成独立对象，供首次加载、表单初始化和重置共用。
   return {
     status: 'pending',
     keyword: '',

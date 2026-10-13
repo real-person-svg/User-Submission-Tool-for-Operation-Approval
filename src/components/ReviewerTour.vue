@@ -8,6 +8,7 @@ const props = defineProps<{
 const visible = ref(false);
 const current = ref(0);
 
+// 通过各组件上的 data-tour 属性定位需要高亮的操作区域。
 const steps = [
   {
     target: '[data-tour="operator"]',
@@ -39,6 +40,7 @@ const steps = [
 function start() {
   if (!props.enabled) return;
 
+  // 仅由父组件手动调用，每次都从第一步开始。
   current.value = 0;
   visible.value = true;
 }
@@ -47,6 +49,7 @@ function finish() {
   visible.value = false;
 }
 
+// 切页、加载或打开其他弹层后，立即结束当前指引。
 watch(() => props.enabled, (enabled) => {
   if (!enabled) finish();
 });

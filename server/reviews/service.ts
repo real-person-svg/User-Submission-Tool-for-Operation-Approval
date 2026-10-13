@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { randomUUID } from 'node:crypto';
 import type { ReviewFailure, ReviewInput, ReviewResult } from '../../shared/reviews.js';
 
+// 状态和版本同时匹配才更新，并递增版本，防止重复审核或并发覆盖。
 const updateSubmissionSql = `UPDATE submissions
   SET status = ?, reject_reason = ?, reviewed_at = ?, reviewed_by = ?, version = version + 1
   WHERE id = ? AND status = 'pending' AND version = ?`;
@@ -11,6 +12,7 @@ const insertLogSql = `INSERT INTO review_logs(
   )
   VALUES (?, ?, ?, 'pending', ?, ?, ?, ?)`;
 
+// 查找指定投稿的审核失败原因
 function reviewFailure(db: DatabaseSync, id: number): ReviewFailure {
   const statement = db.prepare('SELECT id FROM submissions WHERE id = ?');
   const exists = Boolean(statement.get(id));
@@ -41,6 +43,7 @@ export function reviewSubmissions(db: DatabaseSync, input: ReviewInput): ReviewR
   const status = isRejection ? 'rejected' : 'approved';
 
   const now = new Date().toISOString();
+  // 同一批次共用时间和批次编号，便于关联每条成功审核的日志。
   const batchId = randomUUID();
 
   const result: ReviewResult = {
@@ -49,6 +52,7 @@ export function reviewSubmissions(db: DatabaseSync, input: ReviewInput): ReviewR
     failures: [],
   };
 
+  // 提前取得写锁，将本批次的状态更新和日志写入纳入同一事务。
   db.exec('BEGIN IMMEDIATE');
 
   try {
@@ -59,6 +63,7 @@ export function reviewSubmissions(db: DatabaseSync, input: ReviewInput): ReviewR
       const { id, version } = item;
       const updated = updateStatement.run(status, reason, now, operatorId, id, version);
 
+      // 不存在或状态、版本冲突属于逐条失败，其余投稿仍继续处理。
       if (!updated.changes) {
         const failure = reviewFailure(db, id);
 
@@ -66,12 +71,14 @@ export function reviewSubmissions(db: DatabaseSync, input: ReviewInput): ReviewR
         continue;
       }
 
+      // 仅为成功更新的投稿写日志，状态与日志一起提交。
       logStatement.run(id, operatorId, action, status, reason, now, batchId);
       result.successIds.push(id);
     }
 
     db.exec('COMMIT');
   } catch (error) {
+    // 数据库异常回滚整批，包括此前已成功更新的投稿和日志。
     db.exec('ROLLBACK');
 
     throw error;

@@ -13,6 +13,7 @@ export const submissionIdParamsSchema = {
   required: ['id'],
 };
 
+// 由 Fastify 在进入路由前校验查询参数，并补齐默认筛选和分页值。
 export const submissionQuerySchema = {
   type: 'object',
   additionalProperties: false,

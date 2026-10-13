@@ -10,8 +10,10 @@ export function useSubmissionDetail() {
   const loading = ref(false);
   const error = ref('');
 
+  // 只接受最后一次请求的结果，避免快速切换投稿时被旧响应覆盖。
   let requestVersion = 0;
 
+  // 加载投稿详情
   async function load(submissionId: number) {
     const request = ++requestVersion;
     const path = `/submissions/${submissionId}`;
@@ -40,6 +42,7 @@ export function useSubmissionDetail() {
   async function reload() {
     const submissionId = id.value;
 
+    // 审核后仅刷新仍然打开的详情抽屉。
     if (visible.value && submissionId) await load(submissionId);
   }
 

@@ -10,6 +10,7 @@ function validDate(date: string) {
 
   if (!isValidTime) return false;
 
+  // 日期解析可能自动进位，回比原值以排除 2 月 30 日等无效日期。
   const normalizedDate = parsed.toISOString().slice(0, 10);
 
   return normalizedDate === date;
@@ -38,6 +39,7 @@ export function submissionInputError(input: SubmissionInput) {
   ];
   const hasBlankField = requiredFields.some(value => !value.trim());
 
+  // Schema 的最小长度无法排除纯空白，这里补充业务校验。
   if (hasBlankField) return '标题、作者、分类和正文不能为空或只有空格。';
 
   const date = input.submitted_at.slice(0, 10);
